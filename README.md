@@ -1,5 +1,5 @@
 
-[![GitHub Release](https://img.shields.io/github/release/codemonstur/bobtranslate.svg)](https://github.com/codemonstur/letsencrypt/releases) 
+[![GitHub Release](https://img.shields.io/github/release/codemonstur/letsencrypt.svg)](https://github.com/codemonstur/letsencrypt/releases) 
 [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
 
 # LetsEncrypt Bob Plugin

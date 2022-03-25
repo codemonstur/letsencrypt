@@ -2,7 +2,7 @@ include https://raw.githubusercontent.com/codemonstur/bobfiles/master/foss-app-g
 
 packaging: bob-plugin
 enablePreview: false
-version: 1
+version: 2
 dependencies:
   - project: ../bobthebuildtool
     scope: provided
