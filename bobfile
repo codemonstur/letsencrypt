@@ -1,0 +1,13 @@
+include https://raw.githubusercontent.com/codemonstur/bobfiles/master/foss-app-github
+
+packaging: bob-plugin
+enablePreview: false
+version: 1
+dependencies:
+  - project: ../bobthebuildtool
+    scope: provided
+  - repository: org.shredzone.acme4j:acme4j-client:2.12
+  - repository: org.shredzone.acme4j:acme4j-utils:2.12
+  - repository: dnsjava:dnsjava:3.4.1
+  - repository: org.slf4j:slf4j-nop:2.0.0-alpha5
+
