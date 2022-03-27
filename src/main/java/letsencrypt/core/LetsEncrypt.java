@@ -10,7 +10,6 @@ import java.security.KeyPair;
 import java.util.concurrent.TimeoutException;
 
 import static java.lang.System.currentTimeMillis;
-import static java.util.concurrent.TimeUnit.MINUTES;
 import static letsencrypt.util.Exceptions.*;
 import static letsencrypt.util.Functions.isInThePast;
 import static org.shredzone.acme4j.Status.*;
@@ -36,10 +35,10 @@ public enum LetsEncrypt {;
         return findChallenge(findAuthorization(order)).getDigest();
     }
 
-    public static void executeChallengeAndWait(final Order order) throws AcmeException, InterruptedException, TimeoutException {
+    public static void executeChallengeAndWait(final Order order, final long maxWaitTime) throws AcmeException, InterruptedException, TimeoutException {
         final var auth = findAuthorization(order);
         findChallenge(auth).trigger();
-        waitForChallengeAccepted(auth, MINUTES.toMillis(5));
+        waitForChallengeAccepted(auth, maxWaitTime);
     }
 
     private static Authorization findAuthorization(final Order order) {
@@ -55,9 +54,9 @@ public enum LetsEncrypt {;
         return challenge;
     }
 
-    public static void waitForChallengeAccepted(final Authorization auth, final long maxWait)
+    public static void waitForChallengeAccepted(final Authorization auth, final long maxWaitTime)
             throws InterruptedException, AcmeException, TimeoutException {
-        final long stopTime = currentTimeMillis() + maxWait;
+        final long stopTime = currentTimeMillis() + maxWaitTime;
         while (true) {
             final var status = auth.getStatus();
             if (status == VALID) break;

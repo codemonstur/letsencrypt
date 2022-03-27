@@ -75,12 +75,12 @@ public enum CreateCertificate {;
         logInfo(logEnabled, "Setting " + acmeName + " TXT record for domain " + arguments.domain + " to " + challenge);
         GoDaddy.deleteRecord(arguments.godaddyApiKey, arguments.domain, "TXT", acmeName);
         GoDaddy.setRecord(arguments.godaddyApiKey, arguments.domain, "TXT", acmeName, challenge);
-        logInfo(logEnabled, "TTL in TXT records in GoDaddy is 10 minutes, we will have to wait");
         try {
+            logInfo(logEnabled, "TTL in TXT records in GoDaddy is 10 minutes, we will have to wait");
             Thread.sleep(MINUTES.toMillis(10));
 
             logInfo(logEnabled, "Triggering challenge at LetsEncrypt and waiting for resolution");
-            executeChallengeAndWait(order);
+            executeChallengeAndWait(order, MINUTES.toMillis(5));
 
             logInfo(logEnabled, "Executing new Certificate Signing Request");
             order.execute(newCertificateSigningRequest(domainKeyPair, arguments.organization, arguments.hostname));
@@ -99,11 +99,18 @@ public enum CreateCertificate {;
     // *.*.something.domain.tld -> _acme-challenge.*.something
     // *.something.domain.tld -> _acme-challenge.something
     // *.domain.tld -> _acme-challenge
-    // something.domain.tld -> _acme-challenge
-    private static String toAcmeChallengeName(final String domain, final String hostname) {
-        final var dotOffset = hostname.indexOf('.');
-        final var shortName = hostname.substring(dotOffset, hostname.length() - (domain.length() + 1));
-        return "_acme-challenge" + (".".equals(shortName) ? "" : shortName);
+    // something.domain.tld -> _acme-challenge.something
+    // something.something.domain.tld -> _acme-challenge.something.something
+    public static String toAcmeChallengeName(final String domain, final String hostname) {
+        final int offsetDomain = hostname.length() - (domain.length() + 1);
+        if (hostname.startsWith("*.")) {
+            final var dotOffset = hostname.indexOf('.');
+            final var shortName = hostname.substring(dotOffset, offsetDomain);
+            return "_acme-challenge" + (".".equals(shortName) ? "" : shortName);
+        } else {
+            final var shortName = hostname.substring(0, offsetDomain);
+            return "_acme-challenge." + shortName;
+        }
     }
 
 }
