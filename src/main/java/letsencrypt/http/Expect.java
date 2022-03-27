@@ -1,4 +1,4 @@
-package letsencrypt.util;
+package letsencrypt.http;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;

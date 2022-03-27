@@ -2,52 +2,46 @@ package letsencrypt;
 
 import bobthebuildtool.pojos.buildfile.Project;
 import bobthebuildtool.pojos.error.VersionTooOld;
-import jcli.errors.InvalidCommandLine;
-import letsencrypt.dto.CliArguments;
-import org.shredzone.acme4j.exception.AcmeException;
-
-import javax.naming.NamingException;
-import java.io.IOException;
-import java.util.Map;
+import bobthebuildtool.services.commands.Command;
+import letsencrypt.actions.CreateAccount;
+import letsencrypt.actions.CreateCertificate;
+import letsencrypt.actions.CreateKeyPair;
+import letsencrypt.actions.ListGoDaddyRecords;
 
 import static bobthebuildtool.services.Update.requireBobVersion;
-import static jcli.CliParserBuilder.newCliParser;
-import static letsencrypt.actions.CreateAccount.createAccount;
-import static letsencrypt.actions.CreateCertificate.createCertificate;
-import static letsencrypt.actions.CreateKeyPair.createKeyPair;
-import static letsencrypt.actions.ListRecords.listRecords;
 
 public enum BobPlugin {;
 
-    private static final String DESCRIPTION_LETSENCRYPT = "Creating certificates using letsencrypt";
-
-    private static ClassLoader classLoader;
+    private static final String
+        DESCRIPTION_ACCOUNT = "Create a new account at letsencrypt using a given keypair",
+        DESCRIPTION_CERTIFICATE = "Creates a certificate using LetsEncrypt and GoDaddy",
+        DESCRIPTION_KEYPAIR = "Create a keypair for use in LetsEncrypt accounts or certificates",
+        DESCRIPTION_LIST_DNS = "List DNS records in GoDaddy";
 
     public static void installPlugin(final Project project) throws VersionTooOld {
         requireBobVersion("7");
-        classLoader = Thread.currentThread().getContextClassLoader();
-        project.addCommand("letsencrypt", DESCRIPTION_LETSENCRYPT, BobPlugin::letsencrypt);
+
+        final var classLoader = Thread.currentThread().getContextClassLoader();
+
+        project.addCommand("le-account", DESCRIPTION_ACCOUNT,
+                setClassLoaderFirst(classLoader, CreateAccount::createAccount));
+        project.addCommand("le-certificate", DESCRIPTION_CERTIFICATE,
+                setClassLoaderFirst(classLoader, CreateCertificate::createCertificate));
+        project.addCommand("create-keypair", DESCRIPTION_KEYPAIR, CreateKeyPair::createKeyPair);
+        project.addCommand("list-godaddy-records", DESCRIPTION_LIST_DNS, ListGoDaddyRecords::listRecords);
     }
 
-    private static int letsencrypt(final Project project, final Map<String, String> env, final String[] args)
-            throws InvalidCommandLine, AcmeException, IOException, NamingException, InterruptedException {
-        final var original = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(classLoader);
-        try {
-            final CliArguments arguments = newCliParser(CliArguments::new)
-                    .onErrorPrintHelpAndExit()
-                    .onHelpPrintHelpAndExit()
-                    .parse(args);
-
-            return switch (arguments.action) {
-                case account -> createAccount(arguments);
-                case keypair -> createKeyPair(arguments);
-                case certificate -> createCertificate(arguments);
-                case records -> listRecords(arguments);
-            };
-        } finally {
-            Thread.currentThread().setContextClassLoader(original);
-        }
+    // Acme4j uses a ServiceLoader, this class needs the context class loader set
+    private static Command setClassLoaderFirst(final ClassLoader classLoader, final Command command) {
+        return (project, environment, args) -> {
+            final var original = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(classLoader);
+            try {
+                return command.execute(project, environment, args);
+            } finally {
+                Thread.currentThread().setContextClassLoader(original);
+            }
+        };
     }
 
 }

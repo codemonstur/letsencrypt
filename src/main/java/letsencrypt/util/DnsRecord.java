@@ -1,4 +1,4 @@
-package letsencrypt.dto;
+package letsencrypt.util;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -15,7 +15,9 @@ public final class DnsRecord {
     public final Integer priority;
     public final String protocol;
     public final String service;
-    public final Integer ttl = 600;
+    // I would love for this value to be 0, but GoDaddy won't go lower than 600
+    // If you try anyway the API will return a 422
+    public final int ttl = 600;
     public final String type;
     public final Integer weight;
 
@@ -29,4 +31,5 @@ public final class DnsRecord {
         this.priority = null;
         this.weight = null;
     }
+
 }
