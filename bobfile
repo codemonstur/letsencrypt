@@ -2,12 +2,11 @@ include https://raw.githubusercontent.com/codemonstur/bobfiles/master/foss-app-g
 
 packaging: bob-plugin
 enablePreview: false
-version: 4
+version: 5
 dependencies:
   - project: ../bobthebuildtool
     scope: provided
-  - repository: org.shredzone.acme4j:acme4j-client:2.12
-  - repository: org.shredzone.acme4j:acme4j-utils:2.12
-  - repository: dnsjava:dnsjava:3.5.0
+  - repository: org.shredzone.acme4j:acme4j-client:2.13
+  - repository: org.shredzone.acme4j:acme4j-utils:2.13
+  - repository: dnsjava:dnsjava:3.5.1
   - repository: org.slf4j:slf4j-nop:1.7.36
-

@@ -17,7 +17,7 @@ import static letsencrypt.util.Functions.logInfo;
 
 public enum CreateAccount {;
 
-    @CliCommand(name = "letsencrypt-account", description = "create a cryptographic keypair")
+    @CliCommand(name = "le-account", description = "create a cryptographic keypair")
     public static final class CliArguments {
         @CliOption(longName = "staging", description = "Flag to use the staging server URI instead of the production URI")
         public boolean staging;
