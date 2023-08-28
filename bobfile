@@ -6,7 +6,7 @@ version: 5
 dependencies:
   - project: ../bobthebuildtool
     scope: provided
-  - repository: org.shredzone.acme4j:acme4j-client:2.15
-  - repository: org.shredzone.acme4j:acme4j-utils:2.15
+  - repository: org.shredzone.acme4j:acme4j-client:3.0.0
+  - repository: org.shredzone.acme4j:acme4j-utils:2.16
   - repository: dnsjava:dnsjava:3.5.2
-  - repository: org.slf4j:slf4j-nop:2.0.6
+  - repository: org.slf4j:slf4j-nop:2.0.7
